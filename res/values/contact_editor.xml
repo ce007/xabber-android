@@ -40,4 +40,8 @@
     <string name="choose_account">Choose an account</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
     <string name="EMPTY_ACCOUNT">Please select an account</string>
+
+    <string name="add_room_uuid">Create new room</string>
+    <string name="enter_room_name">Enter new room name</string>
+    <string name="room_name_is_empty">Room name is empty</string>
 </resources>

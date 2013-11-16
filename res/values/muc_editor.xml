@@ -42,4 +42,6 @@
     <string name="muc_leave">Leave conference</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
     <string name="muc_save">Save conference</string>
+
+    <string name="muc_join_uuid">Join conference</string>
 </resources>

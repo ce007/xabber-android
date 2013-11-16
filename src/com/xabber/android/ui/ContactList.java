@@ -16,6 +16,7 @@ package com.xabber.android.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -84,6 +85,7 @@ import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.dialog.GroupRenameDialogBuilder;
+import com.xabber.android.ui.dialog.RoomAddDialogBuilder;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -123,6 +125,7 @@ public class ContactList extends ManagedListActivity implements
 	private static final int OPTION_MENU_EXIT_ID = 0x08;
 	private static final int OPTION_MENU_SEARCH_ID = 0x0A;
 	private static final int OPTION_MENU_CLOSE_CHATS_ID = 0x0B;
+    private static final int OPTION_MENU_JOIN_ROOM_UUID_ID = 0x0C;
 
 	private static final int CONTEXT_MENU_VIEW_CHAT_ID = 0x12;
 	private static final int CONTEXT_MENU_EDIT_CONTACT_ID = 0x13;
@@ -157,6 +160,7 @@ public class ContactList extends ManagedListActivity implements
 	private static final int DIALOG_CONTACT_INTEGRATION_ID = 0x54;
 	private static final int DIALOG_OPEN_WITH_ACCOUNT_ID = 0x55;
 	private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
+    private static final int DIALOG_ADD_ROOM_UUID_ID = 0x58;
 
 	/**
 	 * Adapter for contact list.
@@ -428,6 +432,9 @@ public class ContactList extends ManagedListActivity implements
 		menu.add(0, OPTION_MENU_PREFERENCE_EDITOR_ID, 0,
 				getResources().getText(R.string.preference_editor)).setIcon(
 				android.R.drawable.ic_menu_preferences);
+        menu.add(0, OPTION_MENU_JOIN_ROOM_UUID_ID, 0,
+                getResources().getText(R.string.muc_join_uuid)).setIcon(
+                android.R.drawable.ic_menu_add);
 		menu.add(0, OPTION_MENU_STATUS_EDITOR_ID, 0,
 				getText(R.string.status_editor)).setIcon(
 				R.drawable.ic_menu_notifications);
@@ -485,6 +492,9 @@ public class ContactList extends ManagedListActivity implements
 			}
 			contactListAdapter.onChange();
 			return true;
+            case OPTION_MENU_JOIN_ROOM_UUID_ID:
+                showDialog(DIALOG_ADD_ROOM_UUID_ID);
+                return true;
 		}
 		return false;
 	}
@@ -819,6 +829,10 @@ public class ContactList extends ManagedListActivity implements
 			});
 			progressDialog.setIndeterminate(true);
 			return progressDialog;
+
+        case DIALOG_ADD_ROOM_UUID_ID:
+            return new RoomAddDialogBuilder(this,
+                    DIALOG_ADD_ROOM_UUID_ID, this).create();
 		default:
 			return null;
 		}
@@ -1077,6 +1091,11 @@ public class ContactList extends ManagedListActivity implements
 					openDialogUser);
 			openChat(baseEntity, openDialogText);
 			break;
+
+            case DIALOG_ADD_ROOM_UUID_ID:
+                String roomUUID = UUID.randomUUID().toString();
+
+            break;
 		}
 	}
 
