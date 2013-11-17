@@ -14,14 +14,14 @@
  */
 package com.xabber.android.data.extension.muc;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smackx.Form;
+import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.packet.MUCUser;
 
@@ -480,5 +480,46 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 		authorizationErrorProvider.add(
 				new RoomAuthorizationError(account, room), null);
 	}
+
+
+    public void adjustRoomConfiguration(String account, String room, final String roomName) {
+        RoomChat roomChat = getRoomChat(account, room);
+        final MultiUserChat multiUserChat = roomChat.getMultiUserChat();
+
+        if (multiUserChat != null) {
+            Thread thread = new Thread("Adjust room configuration " + room
+                    + account) {
+                @Override
+                public void run() {
+                    try {
+                        Form form = multiUserChat.getConfigurationForm();
+
+                        if(form != null)
+                        {
+                            Form submitForm = form.createAnswerForm();
+
+                            // Add default answers to the form to submit
+                            for (Iterator fields = form.getFields(); fields.hasNext();) {
+                                FormField field = (FormField) fields.next();
+                                if (!FormField.TYPE_HIDDEN.equals(field.getType()) && field.getVariable() != null) {
+                                    // Sets the default value as the answer
+                                    submitForm.setDefaultAnswer(field.getVariable());
+                                }
+                            }
+                            submitForm.setAnswer("muc#roomconfig_roomname", roomName);
+                            multiUserChat.sendConfigurationForm(submitForm);
+                        }
+                    } catch (IllegalStateException e) {
+                        // Do nothing
+                    } catch(XMPPException xe) {
+                        Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+                    }
+                }
+            };
+            thread.setDaemon(true);
+            thread.start();
+        }
+
+    }
 
 }

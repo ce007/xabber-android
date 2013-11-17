@@ -16,6 +16,7 @@ package com.xabber.android.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.UUID;
 
 import android.app.Dialog;
@@ -90,6 +91,7 @@ import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;
+import org.jivesoftware.smack.util.StringUtils;
 
 /**
  * Main application activity.
@@ -1092,12 +1094,33 @@ public class ContactList extends ManagedListActivity implements
 			openChat(baseEntity, openDialogText);
 			break;
 
-            case DIALOG_ADD_ROOM_UUID_ID:
-                String roomUUID = UUID.randomUUID().toString();
-
+        case DIALOG_ADD_ROOM_UUID_ID:
+            String roomUUID = UUID.randomUUID().toString();
+            RoomAddDialogBuilder builder = (RoomAddDialogBuilder)dialogBuilder;
+            String account = builder.getAccount();
+            String room = roomUUID + "@" + builder.getServer();
+            MUCManager.getInstance().createRoom(account, room,
+                getNickname(account), "", true);
+            MUCManager.getInstance().adjustRoomConfiguration(account, room,
+               builder.getRoomName());
             break;
 		}
 	}
+
+    /**
+     * @param account
+     * @return Suggested nickname in the room.
+     */
+    private String getNickname(String account) {
+        if (account == null)
+            return "";
+        String nickname = AccountManager.getInstance().getNickName(account);
+        String name = StringUtils.parseName(nickname);
+        if ("".equals(name))
+            return nickname;
+        else
+            return name;
+    }
 
 	@Override
 	public void onDecline(DialogBuilder dialogBuilder) {
