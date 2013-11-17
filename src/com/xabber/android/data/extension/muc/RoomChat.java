@@ -183,7 +183,7 @@ public class RoomChat extends AbstractChat {
 
 	@Override
 	protected boolean notifyAboutMessage() {
-		return SettingsManager.eventsMessage() == SettingsManager.EventsMessage.chatAndMuc;
+		return true; //SettingsManager.eventsMessage() == SettingsManager.EventsMessage.chatAndMuc;
 	}
 
 	@Override
